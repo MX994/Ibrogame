@@ -1,9 +1,10 @@
 #ifndef __SD_H
 #define __SD_H
 
+#include <vector>
 #include <SdFat.h>
 
-namespace IbraOS {
+namespace IbraKernel {
     class SD {
         private:
             SdFat *sd;

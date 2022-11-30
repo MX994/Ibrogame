@@ -1,0 +1,4 @@
+HelloWorld:
+    Title: "Hello World"
+    Icon: hello.png
+    Source: hello.a

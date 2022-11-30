@@ -5,7 +5,7 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_HX8357.h"
 
-namespace IbraOS {
+namespace IbraKernel {
     class Display {
         private:
             Adafruit_HX8357 *TFT;
