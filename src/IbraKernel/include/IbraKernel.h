@@ -3,6 +3,7 @@
 
 #include "IO/Bluetooth.h"
 #include "IO/SD.h"
+#include "REXE/Interpreter.h"
 #include "Constants.h"
 
 #endif 

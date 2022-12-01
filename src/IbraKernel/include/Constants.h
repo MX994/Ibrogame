@@ -1,6 +1,7 @@
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
 
+// SD
 #define SD_CS 2
 
 // RFID
@@ -10,6 +11,5 @@
 // TFT
 #define TFT_DC 9
 #define TFT_CS 10
-
 
 #endif

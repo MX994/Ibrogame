@@ -9,10 +9,11 @@
 - Figure out gesture sensoirs.
 
 ### Software (Kernel)
-- **Finish RXE interpreter!**
+- **Finish RXE interpreter! (now mostly done, needs testing).**
 - Finish RXE compilation toolchain.
 - Boot into userland via RXE interpreter.
 - Implement system call table (initializing networking, I/O, etc).
+- Make C++-style handlers for Bluetooth, Display, RFID.
 
 ### Software (Userland)
 - Create user interface.

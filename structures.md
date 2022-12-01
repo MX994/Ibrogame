@@ -6,6 +6,7 @@ Warning: These can change!
 ```C
 struct RAPP {
     char Magic[0x4]; // RAPP
+    uint16_t IconSize; 
     char Title[0x10]; // App title.
     char Icon[0x400]; // Preview. Can be dropped if we need more space for the executable. 
     REXE *Game;
