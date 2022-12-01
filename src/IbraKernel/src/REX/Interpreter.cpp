@@ -198,30 +198,114 @@ void IbraKernel::REX::Run(char *Program) {
                 Registers[PC] += sizeof(SyscallNum);
                 break;
             case end:
+                // end
+                return;
+            case ldrb:
+                // ldrb <dest> <src> <shift>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+
+                uint8_t SrcRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(SrcRegister);
+
+                uint16_t Shift = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Shift);
+
+                Registers[DestRegister] = *((uint8_t *)Registers[SrcRegister] + Shift);
+                break;
+            case strbr:
+                // strbr <dest> <src> <shift>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(SrcRegister);
+
+                uint8_t SrcRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+
+                uint16_t Shift = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Shift);
+
+                *((uint8_t *)Registers[DestRegister] + Shift) = Registers[SrcRegister];
+                break;
+            case strbi:
+                // strbi <dest> <imm> <shift>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+
+                uint8_t Immediate = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Immediate);
+
+                uint16_t Shift = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Shift);
+
+                *((uint8_t *)Registers[DestRegister] + Shift) = Immediate;
+                break;      
+            case ldrh:
+                // ldrh <dest> <src> <shift>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+
+                uint8_t SrcRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(SrcRegister);
+
+                uint16_t Shift = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Shift);
+
+                Registers[DestRegister] = *((uint16_t *)((uint8_t *)Registers[SrcRegister] + Shift));
+                break;
+            case strhr:
+                // strhr <dest> <src> <shift>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(SrcRegister);
+
+                uint8_t SrcRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+
+                uint16_t Shift = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Shift);
+
+                *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Registers[SrcRegister];
+                break;
+            case strhi:
+                // strhi <dest> <imm> <shift>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+
+                uint16_t Immediate = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Immediate);
+
+                uint16_t Shift = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(Shift);
+
+                *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Immediate;
+                break;          
             default:
+                Serial.print("Unrecognized opcode. Opcode was ");
+                Serial.println(Operation);
+                Serial.println("Terminating VM.");
                 return;
         }
     }
 }
 
 void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint32_t *Condition) {
-    // TODO: Set Condition to boolean result of each compare statement.
     switch (Compare) {
-        case 0x0:
+        case LT:
+            *Condition = LHS < RHS; 
             break;
-        case 0x1:
+        case GT:
+            *Condition = LHS > RHS;
             break;
-        case 0x2:
+        case LTEQ:
+            *Condition = LHS <= RHS;
             break;
-        case 0x3:
+        case GTEQ:
+            *Condition = LHS >= RHS;
             break;
-        case 0x4:
+        case EQ:
+            *Condition = LHS == RHS;
             break;
-        case 0x5:
-            break;
-        case 0x6:
-            break;
-        case 0x7:
+        case NEQ:
+            *Condition = LHS != RHS;
             break;
     }
 }

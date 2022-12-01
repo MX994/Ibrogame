@@ -145,3 +145,51 @@
 .hword 0x14
 .endm
 
+@ ldrb <u8> <u8> <u16> 
+.macro ldrb p0, p1, p2:
+.hword 0x15
+.byte \p0
+.byte \p1
+.hword \p2
+.endm
+
+@ strbr <u8> <u8> <u16> 
+.macro strbr p0, p1, p2:
+.hword 0x16
+.byte \p0
+.byte \p1
+.hword \p2
+.endm
+
+@ strbi <u8> <u8> <u16> 
+.macro strbi p0, p1, p2:
+.hword 0x17
+.byte \p0
+.byte \p1
+.hword \p2
+.endm
+
+@ ldrh <u8> <u8> <u16> 
+.macro ldrh p0, p1, p2:
+.hword 0x18
+.byte \p0
+.byte \p1
+.hword \p2
+.endm
+
+@ strhr <u8> <u8> <u16> 
+.macro strhr p0, p1, p2:
+.hword 0x19
+.byte \p0
+.byte \p1
+.hword \p2
+.endm
+
+@ strhi <u8> <u16> <u16> 
+.macro strhi p0, p1, p2:
+.hword 0x1a
+.byte \p0
+.hword \p1
+.hword \p2
+.endm
+

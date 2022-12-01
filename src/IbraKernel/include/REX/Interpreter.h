@@ -4,6 +4,7 @@
 namespace IbraKernel {
     class REX {
         void Run(char *Program);
+        void CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint32_t *Condition);
     };
 };
 
@@ -46,5 +47,20 @@ namespace IbraKernel {
 #define jump 18
 #define syscall 19
 #define end 20
+#define ldrb 21
+#define strbr 22
+#define strbi 23
+#define ldrh 24
+#define strhr 25
+#define strhi 26
+
+// Comparisons
+// 'LT', 'GT', 'LTEQ', 'GTEQ', 'EQ', 'NEQ'
+#define LT 0
+#define GT 1
+#define LTEQ 2
+#define GTEQ 3
+#define EQ 4
+#define NEQ 5
 
 #endif

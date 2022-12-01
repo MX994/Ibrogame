@@ -29,6 +29,15 @@ Operations = {
     'jump' : ['u16'],
     'syscall' : ['u16'],
     'end' : [],
+
+    # Mem R/W
+    'ldrb' : ['u8', 'u8', 'u16'],
+    'strbr' : ['u8', 'u8', 'u16'],
+    'strbi' : ['u8', 'u8', 'u16'],
+
+    'ldrh' : ['u8', 'u8', 'u16'],
+    'strhr' : ['u8', 'u8', 'u16'], 
+    'strhi' : ['u8', 'u16', 'u16'],
 }
 
 Conditions = ['LT', 'GT', 'LTEQ', 'GTEQ', 'EQ', 'NEQ']
