@@ -7,7 +7,7 @@ void IbraKernel::REX::Run(char *Program) {
         uint16_t Operation = *(uint16_t *)(Program + Registers[PC]);
         Registers[PC] += sizeof(uint16_t);
         switch (Operation) {
-            case moverr:
+            case moverr: {
                 // moverr <dest> <src>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -17,7 +17,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] = Registers[Src];
                 break;
-            case moveri:
+            }
+            case moveri: {
                 // moveri <dest> <imm>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -27,7 +28,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] = Val;
                 break;
-            case addrr:
+            }
+            case addrr: {
                 // addrr <dest> <amt_reg>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -37,17 +39,19 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] += Registers[AmtReg];
                 break;
-            case addri:
+            }
+            case addri: {
                 // addri <dest> <imm>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
 
-                uint16_t Val = *((uint16_t) (Program + Registers[PC]));
+                uint16_t Val = *((uint16_t *) (Program + Registers[PC]));
                 Registers[PC] += sizeof(Val);
 
                 Registers[Dest] += Val;
                 break;
-            case subrr:
+            }
+            case subrr: {
                 // subrr <dest> <amt_reg>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -57,17 +61,19 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] -= Registers[AmtReg];
                 break;
-            case subri:
+            }
+            case subri: {
                 // subri <dest> <imm>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
 
-                uint16_t Val = *((uint16_t) (Program + Registers[PC]));
+                uint16_t Val = *((uint16_t *) (Program + Registers[PC]));
                 Registers[PC] += sizeof(Val);
 
                 Registers[Dest] -= Val;
                 break;
-            case ls:
+            }
+            case ls: {
                 // ls <dest> <amt>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -77,17 +83,19 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] <<= Amt;
                 break;
-            case rs:
+            }
+            case rs: {
                 // rs <dest> <amt>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
 
                 uint8_t Amt = *(Program + Registers[PC]);
-                Registers[PC] += sizeof[Amt]
+                Registers[PC] += sizeof(Amt);
 
                 Registers[Dest] >>= Amt; 
-                break;
-            case andrr:
+                break; 
+            }
+            case andrr: {
                 // andrr <dest> <amt_reg>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -97,7 +105,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] &= Registers[AmtReg];
                 break;
-            case andri:
+            }
+            case andri: {
                 // andri <dest> <imm>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -107,7 +116,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] &= Val; 
                 break;
-            case orrr:
+            }
+            case orrr: {
                 // orrr <dest> <amt_reg>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -117,7 +127,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] |= Registers[AmtReg];
                 break;
-            case orri:
+            }
+            case orri: {
                 // orri <dest> <imm>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -127,7 +138,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] |= Val; 
                 break;
-            case xorrr:
+            }
+            case xorrr: {
                 // xorrr <dest> <amt_reg>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -137,7 +149,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] ^= Registers[AmtReg];
                 break;
-            case xorri:
+            }
+            case xorri: {
                 // xorri <dest> <imm>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -147,7 +160,8 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[Dest] ^= Val; 
                 break;
-            case cmprr:
+            }
+            case cmprr: {
                 // cmprr <op1> <cmp_instr> <op2>
                 uint8_t Op1Reg = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Op1Reg);
@@ -155,12 +169,13 @@ void IbraKernel::REX::Run(char *Program) {
                 uint8_t CompInst = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(CompInst);
 
-                unit8_t Op2Reg = *(Program + Registers[PC]);
+                uint8_t Op2Reg = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Op2Reg);
 
                 CompareSetCondReg(Op1Reg, CompInst, Op2Reg, &Registers[CND]);
                 break;
-            case cmpri:
+            }
+            case cmpri: {
                 // cmpri <op1> <cmp_instr> <imm>
                 uint8_t Op1Reg = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Op1Reg);
@@ -171,9 +186,10 @@ void IbraKernel::REX::Run(char *Program) {
                 uint16_t Val = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Val);
 
-                CompareSetCondReg(Op1Reg, CompInst, Op2Reg, &Registers[CND]);
+                CompareSetCondReg(Op1Reg, CompInst, Val, &Registers[CND]);
                 break;
-            case cjump:
+            }
+            case cjump: {
                 // cjump
                 uint8_t Expected = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Expected);
@@ -185,22 +201,26 @@ void IbraKernel::REX::Run(char *Program) {
                     Registers[PC] = (uint32_t)(Registers[PC] + RelJumpOffset);
                 }
                 break;
-            case jump:
+            }
+            case jump: {
                 //jump
                 int16_t JumpOffset = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(JumpOffset);
 
-                Registers[PC] = (uint32_t)(Registers[PC] + RelJumpOffset);
+                Registers[PC] = (uint32_t)(Registers[PC] + JumpOffset);
                 break;
-            case syscall:
+            }
+            case syscall: {
                 // syscall
                 uint16_t SyscallNum = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(SyscallNum);
                 break;
-            case end:
-                // end
+            }
+            case ret: {
+                // ret
                 return;
-            case ldrb:
+            }
+            case ldrb: {
                 // ldrb <dest> <src> <shift>
                 uint8_t DestRegister = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(DestRegister);
@@ -213,20 +233,22 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[DestRegister] = *((uint8_t *)Registers[SrcRegister] + Shift);
                 break;
-            case strbr:
+            }
+            case strbr: {
                 // strbr <dest> <src> <shift>
                 uint8_t DestRegister = *(Program + Registers[PC]);
-                Registers[PC] += sizeof(SrcRegister);
+                Registers[PC] += sizeof(DestRegister);
 
                 uint8_t SrcRegister = *(Program + Registers[PC]);
-                Registers[PC] += sizeof(DestRegister);
+                Registers[PC] += sizeof(SrcRegister);
 
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
                 *((uint8_t *)Registers[DestRegister] + Shift) = Registers[SrcRegister];
                 break;
-            case strbi:
+            }
+            case strbi: {
                 // strbi <dest> <imm> <shift>
                 uint8_t DestRegister = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(DestRegister);
@@ -238,8 +260,9 @@ void IbraKernel::REX::Run(char *Program) {
                 Registers[PC] += sizeof(Shift);
 
                 *((uint8_t *)Registers[DestRegister] + Shift) = Immediate;
-                break;      
-            case ldrh:
+                break;
+            }      
+            case ldrh: {
                 // ldrh <dest> <src> <shift>
                 uint8_t DestRegister = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(DestRegister);
@@ -252,20 +275,22 @@ void IbraKernel::REX::Run(char *Program) {
 
                 Registers[DestRegister] = *((uint16_t *)((uint8_t *)Registers[SrcRegister] + Shift));
                 break;
-            case strhr:
+            }
+            case strhr: {
                 // strhr <dest> <src> <shift>
                 uint8_t DestRegister = *(Program + Registers[PC]);
-                Registers[PC] += sizeof(SrcRegister);
+                Registers[PC] += sizeof(DestRegister);
 
                 uint8_t SrcRegister = *(Program + Registers[PC]);
-                Registers[PC] += sizeof(DestRegister);
+                Registers[PC] += sizeof(SrcRegister);
 
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
                 *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Registers[SrcRegister];
                 break;
-            case strhi:
+            }
+            case strhi: {
                 // strhi <dest> <imm> <shift>
                 uint8_t DestRegister = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(DestRegister);
@@ -277,12 +302,14 @@ void IbraKernel::REX::Run(char *Program) {
                 Registers[PC] += sizeof(Shift);
 
                 *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Immediate;
-                break;          
-            default:
+                break;   
+            }       
+            default: {
                 Serial.print("Unrecognized opcode. Opcode was ");
                 Serial.println(Operation);
                 Serial.println("Terminating VM.");
                 return;
+            }
         }
     }
 }
@@ -309,4 +336,3 @@ void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Comp
             break;
     }
 }
-

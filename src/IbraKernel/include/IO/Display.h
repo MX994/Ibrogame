@@ -10,11 +10,9 @@ namespace IbraKernel {
         private:
             Adafruit_HX8357 *TFT;
         public:
-            Display(uint16_t TFTChipSelect, uint16_t TFTDC);
-            void Init();
-            void DrawBitmap(int x, int y, int w, int h, int Color, uint8_t *Bitmap);
-            void WriteText(std::string Text);
-            void Clear(bool Black);
+            Display(uint16_t TFTChipSelect, uint16_t TFTDC, uint16_t TS_XMin, uint16_t TS_XMax, uint16_t TS_YMin, uint16_t TS_YMax);
+            bool Init();
+            Adafruit_HX8357 *GetTFT();
     };
 };
 

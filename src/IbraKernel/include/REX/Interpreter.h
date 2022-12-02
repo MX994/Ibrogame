@@ -1,5 +1,6 @@
 #ifndef __INTERPRETER_H
 #define __INTERPRETER_H
+#include <Arduino.h>
 
 namespace IbraKernel {
     class REX {
@@ -39,14 +40,14 @@ namespace IbraKernel {
 #define andri 10
 #define orrr 11
 #define orri 12
-#define xorr 13
-#define xori 14
+#define xorrr 13
+#define xorri 14
 #define cmprr 15
 #define cmpri 16
 #define cjump 17
 #define jump 18
 #define syscall 19
-#define end 20
+#define ret 20
 #define ldrb 21
 #define strbr 22
 #define strbi 23

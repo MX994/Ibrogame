@@ -2,14 +2,14 @@
 #define __CONSTANTS_H
 
 // SD
-#define SD_CS 2
+#define SD_CS 4
 
 // RFID
-#define RFID_RST 7
-#define RFID_SS 8
+#define RFID_SS 5
+#define RFID_RST 6
 
 // TFT
-#define TFT_DC 9
-#define TFT_CS 10
+#define TFT_DC 3
+#define TFT_CS 8
 
 #endif

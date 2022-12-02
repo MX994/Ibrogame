@@ -17,4 +17,8 @@ namespace IbraKernel {
     };
 };
 
+typedef struct {
+    SdFile* Curr;
+} SDWork;
+
 #endif
