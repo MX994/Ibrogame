@@ -15,11 +15,14 @@ std::vector<uint8_t> IbraKernel::SD::ReadFile(std::string Name) {
     std::vector<uint8_t> Data;
     SdFile Current;
     if (Current.open(Name.c_str(), O_RDONLY)) {
-        Current.read((uint8_t *)&Data, Current.fileSize());
+        while (Current.curPosition() < Current.fileSize()) {
+            Data.push_back(Current.read());
+        }
+        for (int i = 0; i < Data.size(); ++i) {
+            Serial.println(Data[i], HEX);
+        }
+        Current.close();
     }
-    Serial.println(Data.size());
-    Serial.println(Name.c_str());
-    Current.close();
     return Data;
 }
 

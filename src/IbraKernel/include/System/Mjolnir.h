@@ -6,7 +6,7 @@
 namespace IbraKernel {
     class Mjolnir {
         public:
-            void Call(uint8_t Syscall, uint32_t *Registers);
+            static void Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM);
     };
 };
 

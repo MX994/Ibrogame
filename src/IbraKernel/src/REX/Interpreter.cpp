@@ -1,17 +1,47 @@
+#include "IO/IO.h"
 #include "REX/Interpreter.h"
 #include "System/Mjolnir.h"
-#include "IO/IO.h"
+
 void IbraKernel::REX::RunFromFile(std::string Path) {
-    uint8_t *REXRaw = (uint8_t *)(&IbraKernel::IO::EEPROM->ReadFile(Path)[0]);
-    Execute(REXRaw);   
+    std::vector<uint8_t> REXRaw = IbraKernel::IO::EEPROM->ReadFile(Path);
+    Serial.println("REX loaded successfully. Interpreting...");
+    Execute(&(REXRaw[0]));   
+}
+
+uint16_t IbraKernel::REX::WKRAMAlloc(uint16_t Size) {
+    // Find free WKRAM.
+    uint16_t WKRAMPtr = 0;
+    while (WKRAM_MAP.count(WKRAMPtr)) {
+        if (WKRAMPtr > MAX_WKRAM_SIZE) {
+            // Cannot allocate any WKRAM; return.
+            return -1;
+        }
+        WKRAMPtr += WKRAM_MAP[WKRAMPtr];
+    }
+    // Found WKRAM; add to the entry.
+    WKRAM_MAP.insert({WKRAMPtr, Size});
+
+    for (int i = WKRAMPtr; i < WKRAMPtr + Size; ++i) {
+        // Init with all 0.
+        WKRAM[i] = 0;
+    }
+    return WKRAMPtr;
+}
+
+void IbraKernel::REX::WKRAMFree(uint16_t Ptr) {
+    if (!WKRAM_MAP.count(Ptr)) {
+        return;
+    }
+    WKRAM_MAP.erase(Ptr);
 }
 
 void IbraKernel::REX::Execute(uint8_t *Program) {
-    uint32_t Registers[0x10];
-    uint8_t RAM[0x400];
+    uint16_t Registers[0x10];
+    for (int i = 0; i < 0x10; ++i) {
+        Registers[i] = 0x0;
+    }
     while (true) {
         uint16_t Operation = *(uint16_t *)(Program + Registers[PC]);
-        Serial.println(Operation);
         Registers[PC] += sizeof(uint16_t);
         switch (Operation) {
             case moverr: {
@@ -205,7 +235,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 Registers[PC] += sizeof(RelJumpOffset);
 
                 if (Registers[CND] == Expected) {
-                    Registers[PC] = (uint32_t)(Registers[PC] + RelJumpOffset);
+                    Registers[PC] = (uint16_t)(Registers[PC] + RelJumpOffset);
                 }
                 break;
             }
@@ -214,15 +244,15 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 int16_t JumpOffset = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(JumpOffset);
 
-                Registers[PC] = (uint32_t)(Registers[PC] + JumpOffset);
+                Registers[PC] = (uint16_t)(Registers[PC] + JumpOffset);
                 break;
             }
             case syscall: {
                 // syscall
                 uint16_t SyscallNum = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(SyscallNum);
-                IbraKernel::Mjolnir Thor;
-                Thor.Call(SyscallNum, Registers);
+
+                IbraKernel::Mjolnir::Call(SyscallNum, Registers, WKRAM);
                 break;
             }
             case ret: {
@@ -311,15 +341,18 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 Registers[PC] += sizeof(Shift);
 
                 *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Immediate;
-                break;   
+                break;
             }       
             case ldstring: {
                 // ldstring <dest> <string>
                 uint8_t DestRegister = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(DestRegister);
+
                 size_t StringLength = strlen((const char *)(Program + Registers[PC])) + 1;
-                Registers[DestRegister] = (uint32_t)malloc(StringLength);
-                memcpy((uint8_t *)Registers[DestRegister], Program + Registers[PC], StringLength);
+                Registers[DestRegister] = WKRAMAlloc(StringLength);
+                memcpy(WKRAM + Registers[DestRegister], Program + Registers[PC], StringLength);
+                Registers[PC] += StringLength;
+                break;
             }
             default: {
                 Serial.print("Unrecognized opcode. Opcode was ");
@@ -331,7 +364,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
     }
 }
 
-void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint32_t *Condition) {
+void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint16_t *Condition) {
     switch (Compare) {
         case LT:
             *Condition = LHS < RHS; 
@@ -353,4 +386,5 @@ void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Comp
             break;
     }
 }
+
 

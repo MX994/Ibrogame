@@ -26,7 +26,7 @@ void KernelBootAnimation() {
   IbraKernel::IO::Display->GetTFT()->println("IbraOS");
 
   delay(5000);
-
+  IbraKernel::IO::Display->GetTFT()->setCursor(0, 0);
   // IbraKernel::IO::Display->GetTFT()->fillScreen(HX8357_BLACK);
   IbraKernel::REX Interp;
   Interp.RunFromFile("boot.rex");

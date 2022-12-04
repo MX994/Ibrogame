@@ -3,12 +3,18 @@
 
 #include <Arduino.h>
 
+#define MAX_WKRAM_SIZE 0x1000
 namespace IbraKernel {
     class REX {
         public:
             void RunFromFile(std::string Path);
             void Execute(uint8_t *Program);
-            void CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint32_t *Condition);
+            void CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint16_t *Condition);
+            uint16_t WKRAMAlloc(uint16_t Size);
+            void WKRAMFree(uint16_t Ptr);
+        private:
+            std::map<int, int> WKRAM_MAP;
+            uint8_t WKRAM[MAX_WKRAM_SIZE];
     };
 };
 
