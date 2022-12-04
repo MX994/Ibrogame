@@ -1,3 +1,6 @@
+import os
+from argparse import ArgumentParser
+from pathlib import Path
 Operations = {
     # Arithmetic
     'moverr' : ['u8', 'u8'],
@@ -38,11 +41,18 @@ Operations = {
     'ldrh' : ['u8', 'u8', 'u16'],
     'strhr' : ['u8', 'u8', 'u16'], 
     'strhi' : ['u8', 'u16', 'u16'],
+
+    # String
+    'ldstring' : ['u8', 'string']
 }
 
 Conditions = ['LT', 'GT', 'LTEQ', 'GTEQ', 'EQ', 'NEQ']
 
-with open('rasm.inc', 'w') as Macros:
+Parser = ArgumentParser(prog = 'rasmgen', description = 'Creates the syntax file for the rasm language.')
+Parser.add_argument('out')
+Arguments = Parser.parse_args()
+OutputPath = Path(Arguments.out)
+with (OutputPath / 'rasm.inc').open('w') as Macros:
     # Write conditions.
     Macros.write('@ Condition enums\n')
     for Condition in Conditions:
@@ -59,11 +69,17 @@ with open('rasm.inc', 'w') as Macros:
         Macros.write('\n')
         Macros.write(f'.macro {Operation} ')
         for x in range(len(Parameters)):
-            Macros.write(f'p{x}{":" if x == len(Parameters) - 1 else ", "}')
+            Macros.write(f'p{x}{"" if x == len(Parameters) - 1 else ", "}')
         Macros.write('\n')
         Macros.write(f'.hword {hex(OpcodeNum)}\n')
         for x in range(len(Parameters)):
-            Macros.write(f'{".hword" if Parameters[x] == "u16" else ".byte"} \p{x}')
+            match Parameters[x]:
+                case 'u8':
+                    Macros.write(f'.byte \p{x}')
+                case 'u16':
+                    Macros.write(f'.hword \p{x}')
+                case 'string':
+                    Macros.write(f'.asciz "\p{x}\()"')
             Macros.write('\n')
         Macros.write('.endm\n\n')
         OpcodeNum += 1

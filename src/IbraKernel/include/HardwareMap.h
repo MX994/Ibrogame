@@ -1,5 +1,5 @@
-#ifndef __CONSTANTS_H
-#define __CONSTANTS_H
+#ifndef __HARDWAREMAP_H
+#define __HARDWAREMAP_H
 
 // TFT
 #define TFT_DC 2

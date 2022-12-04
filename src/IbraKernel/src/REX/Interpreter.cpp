@@ -304,10 +304,18 @@ void IbraKernel::REX::Run(char *Program) {
                 *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Immediate;
                 break;   
             }       
+            case ldstring: {
+                // ldstring <dest> <string>
+                uint8_t DestRegister = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(DestRegister);
+                size_t StringLength = strlen(Program + Registers[PC]) + 1;
+                Registers[DestRegister] = (uint32_t)malloc(StringLength);
+                memcpy((uint8_t *)Registers[DestRegister], Program + Registers[PC], StringLength);
+            }
             default: {
                 Serial.print("Unrecognized opcode. Opcode was ");
                 Serial.println(Operation);
-                Serial.println("Terminating VM.");
+                Serial.println("Exiting VM...");
                 return;
             }
         }
@@ -336,3 +344,4 @@ void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Comp
             break;
     }
 }
+

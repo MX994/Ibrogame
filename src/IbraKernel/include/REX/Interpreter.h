@@ -1,5 +1,6 @@
 #ifndef __INTERPRETER_H
 #define __INTERPRETER_H
+
 #include <Arduino.h>
 
 namespace IbraKernel {
@@ -54,6 +55,7 @@ namespace IbraKernel {
 #define ldrh 24
 #define strhr 25
 #define strhi 26
+#define ldstring 27
 
 // Comparisons
 // 'LT', 'GT', 'LTEQ', 'GTEQ', 'EQ', 'NEQ'

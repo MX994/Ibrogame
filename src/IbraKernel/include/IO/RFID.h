@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <SdFat.h>
-#include "Constants.h"
 #include <MFRC522.h>
 
 namespace IbraKernel {

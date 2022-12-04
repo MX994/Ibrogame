@@ -1,1 +1,8 @@
-@ TODO: Figure out syntax for our language.
+.include "lib/rasm.inc"
+
+_entry:
+    @ Load "Hello, world!" string into R1.
+    ldstring 1, Hello, world!
+    @ Do a syscall to print it to the screen.
+    syscall 0
+    
