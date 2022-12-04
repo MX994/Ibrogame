@@ -5,8 +5,10 @@
 
 namespace IbraKernel {
     class REX {
-        void Run(char *Program);
-        void CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint32_t *Condition);
+        public:
+            void RunFromFile(std::string Path);
+            void Execute(uint8_t *Program);
+            void CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Compare, uint32_t *Condition);
     };
 };
 
@@ -35,8 +37,8 @@ namespace IbraKernel {
 #define addri 4
 #define subrr 5
 #define subri 6
-#define ls 7
-#define rs 8
+#define lsl 7
+#define lsr 8
 #define andrr 9
 #define andri 10
 #define orrr 11

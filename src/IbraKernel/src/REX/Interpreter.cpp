@@ -1,10 +1,17 @@
 #include "REX/Interpreter.h"
+#include "System/Mjolnir.h"
+#include "IO/IO.h"
+void IbraKernel::REX::RunFromFile(std::string Path) {
+    uint8_t *REXRaw = (uint8_t *)(&IbraKernel::IO::EEPROM->ReadFile(Path)[0]);
+    Execute(REXRaw);   
+}
 
-void IbraKernel::REX::Run(char *Program) {
+void IbraKernel::REX::Execute(uint8_t *Program) {
     uint32_t Registers[0x10];
     uint8_t RAM[0x400];
     while (true) {
         uint16_t Operation = *(uint16_t *)(Program + Registers[PC]);
+        Serial.println(Operation);
         Registers[PC] += sizeof(uint16_t);
         switch (Operation) {
             case moverr: {
@@ -73,7 +80,7 @@ void IbraKernel::REX::Run(char *Program) {
                 Registers[Dest] -= Val;
                 break;
             }
-            case ls: {
+            case lsl: {
                 // ls <dest> <amt>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -84,7 +91,7 @@ void IbraKernel::REX::Run(char *Program) {
                 Registers[Dest] <<= Amt;
                 break;
             }
-            case rs: {
+            case lsr: {
                 // rs <dest> <amt>
                 uint8_t Dest = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Dest);
@@ -214,6 +221,8 @@ void IbraKernel::REX::Run(char *Program) {
                 // syscall
                 uint16_t SyscallNum = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(SyscallNum);
+                IbraKernel::Mjolnir Thor;
+                Thor.Call(SyscallNum, Registers);
                 break;
             }
             case ret: {
@@ -308,7 +317,7 @@ void IbraKernel::REX::Run(char *Program) {
                 // ldstring <dest> <string>
                 uint8_t DestRegister = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(DestRegister);
-                size_t StringLength = strlen(Program + Registers[PC]) + 1;
+                size_t StringLength = strlen((const char *)(Program + Registers[PC])) + 1;
                 Registers[DestRegister] = (uint32_t)malloc(StringLength);
                 memcpy((uint8_t *)Registers[DestRegister], Program + Registers[PC], StringLength);
             }

@@ -18,6 +18,7 @@ std::vector<uint8_t> IbraKernel::SD::ReadFile(std::string Name) {
         Current.read((uint8_t *)&Data, Current.fileSize());
     }
     Serial.println(Data.size());
+    Serial.println(Name.c_str());
     Current.close();
     return Data;
 }
