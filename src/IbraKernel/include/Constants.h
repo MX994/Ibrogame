@@ -1,15 +1,19 @@
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
 
+// TFT
+#define TFT_DC 2
+#define TFT_CS 3
+
 // SD
 #define SD_CS 4
 
 // RFID
-#define RFID_SS 5
-#define RFID_RST 6
+#define RFID_RST 5
+#define RFID_SS 6
 
-// TFT
-#define TFT_DC 3
-#define TFT_CS 8
+// Joystick
+#define LJOYSTICK_SW 10
+#define RJOYSTICK_SW 9
 
 #endif

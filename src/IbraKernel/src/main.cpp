@@ -13,36 +13,37 @@ void KernelBootAnimation(void);
 
 void setup(void) {
   Serial.begin(9600);
-  SPI.begin();
   Display.Init();
+  Display.GetTFT()->setRotation(0);
   Display.GetTFT()->setTextColor(HX8357_BLACK);
   if (!EEPROM.Init(50)) {
     Display.GetTFT()->print("Failed to initialize SD card. Boot halted!");
+    Serial.println("Bruh");
     return;
   }
   KernelBootAnimation();
 }
 
 void KernelBootAnimation() {
+  Display.GetTFT()->setRotation(1);
   Display.GetTFT()->fillScreen(HX8357_WHITE);
-  Display.GetTFT()->setTextSize(5);
-  Display.GetTFT()->setCursor(68, 240);
 
   // Draw IbraOS logo.
+  Display.GetTFT()->setCursor(150, 150);
   Display.GetTFT()->setTextColor(HX8357_BLACK);
+  Display.GetTFT()->setTextSize(5);
   Display.GetTFT()->println("IbraOS");
 
   // Draw subtext.
-  Display.GetTFT()->setTextSize(2);
-  Display.GetTFT()->setCursor(105, 300);
-  Display.GetTFT()->println("Prerelease");
+  // Display.GetTFT()->setTextSize(2);
+  // Display.GetTFT()->setCursor((480 >> 2) - strlen("Prerelease"), 170);
+  // Display.GetTFT()->println("Prerelease");
 }
 
 void loop() {
-  // RC522 test code. Should be put in its own library.
-  if (RFID.Get()->PICC_IsNewCardPresent() && RFID.Get()->PICC_ReadCardSerial()) {
-    for (byte i = 0; i < RFID.Get()->uid.size; ++i)  {
-      Display.GetTFT()->print(RFID.Get()->uid.uidByte[i]);
-    }
-  }
+  Serial.println(analogRead(A0));
+  delay(500);
+  // Serial.println(analogRead(A1));
+  // Serial.println(analogRead(A2));
+  // Serial.println(analogRead(A3));
 }

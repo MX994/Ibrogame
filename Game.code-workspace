@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "IbraKernel",
+			"path": "src/IbraKernel"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"vector": "cpp"
+		}
+	}
+}
