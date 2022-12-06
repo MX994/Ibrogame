@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define MAX_WKRAM_SIZE 0x1000
+#define MAX_WKRAM_SIZE 0x2000
 namespace IbraKernel {
     class REX {
         public:

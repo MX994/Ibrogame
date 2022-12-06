@@ -5,6 +5,8 @@
 #include <SdFat.h>
 #include <MFRC522.h>
 
+#define AUTH_BLK 0x3
+
 namespace IbraKernel {
     class RFID {
         private:
@@ -12,7 +14,9 @@ namespace IbraKernel {
         public:
             RFID(uint16_t SS, uint16_t RST);
             bool Init();
-            MFRC522 *Get();
+            bool Read();
+            bool Write();
+            bool PollAndDoWork();
     };
 };
 

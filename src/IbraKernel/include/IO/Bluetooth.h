@@ -2,7 +2,9 @@
 #define __BLUETOOTH_H
 
 namespace IbraKernel {
-    class Bluetooth {};
+    class Bluetooth {
+        
+    };
 };
 
 #endif

@@ -1,6 +1,12 @@
 #ifndef __HARDWAREMAP_H
 #define __HARDWAREMAP_H
 
+// TFT Touchscreen
+#define TFT_TS_XMIN A6
+#define TFT_TS_XMAX A6
+#define TFT_TS_YMIN A6
+#define TFT_TS_YMAX A6
+
 // TFT
 #define TFT_DC 2
 #define TFT_CS 3
