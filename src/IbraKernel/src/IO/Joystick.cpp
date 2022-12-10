@@ -1,4 +1,4 @@
-#include "Joystick.h"
+#include "IO/Joystick.h"
 
 IbraKernel::Joystick::Joystick(uint16_t XPin, uint16_t YPin, uint16_t SWPin) {
     this->XPin = XPin;

@@ -11,10 +11,8 @@
 
 namespace IbraKernel {
     class IO {
-        private:
-            uint16_t XPin, YPin, SWPin;
         public:
-            Joystick(uint16_t XPin, uint16_t YPin, uint16_t SWPin);
+            bool Init();
             inline static IbraKernel::Bluetooth* Bluetooth;
             inline static IbraKernel::SD* EEPROM;
             inline static IbraKernel::Display* Display;

@@ -12,11 +12,11 @@ bool IbraKernel::RFID::Init() {
 }
 
 bool IbraKernel::RFID::Read(uint8_t Blk, uint8_t *Buffer, uint16_t *Size) {
-  return IbraKernel::RFID::PollAndWork(false, Blk, Buffer, Size);
+  return PollAndWork(false, Blk, Buffer, Size);
 }
 
 bool IbraKernel::RFID::Write(uint8_t Blk, uint8_t *Buffer, uint16_t *Size) {
-  return IbraKernel::RFID::PollAndWork(true, Blk, Buffer, Size);
+  return PollAndWork(true, Blk, Buffer, Size);
 }
 
 bool IbraKernel::RFID::PollAndWork(bool Write, uint8_t BlkNum, uint8_t *Buffer, uint16_t *Size) {
@@ -28,7 +28,7 @@ bool IbraKernel::RFID::PollAndWork(bool Write, uint8_t BlkNum, uint8_t *Buffer, 
     return false;
   }
 
-  if ((Write ? RC522->MIFARE_Write(BlkNum, Buffer, *Size) : RC522->MIFARE_Read(BlkNum, Buffer, Size))) {
+  if ((Write ? RC522->MIFARE_Write(BlkNum, Buffer, *Size) : RC522->MIFARE_Read(BlkNum, Buffer, (uint8_t *)Size))) {
     RC522->PICC_HaltA();
     RC522->PCD_StopCrypto1();
     return false;

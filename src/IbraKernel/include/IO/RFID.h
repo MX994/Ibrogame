@@ -11,12 +11,13 @@ namespace IbraKernel {
     class RFID {
         private:
             MFRC522 *RC522;
+            bool PollAndWork(bool Write, uint8_t BlkNum, uint8_t *Buffer, uint16_t *Size);
+            MFRC522::MIFARE_Key Key;
         public:
             RFID(uint16_t SS, uint16_t RST);
             bool Init();
-            bool Read();
-            bool Write();
-            bool PollAndDoWork();
+            bool Read(uint8_t Blk, uint8_t *Buffer, uint16_t *Size);
+            bool Write(uint8_t Blk, uint8_t *Buffer, uint16_t *Size);
     };
 };
 
