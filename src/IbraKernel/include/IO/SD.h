@@ -16,6 +16,7 @@ namespace IbraKernel {
             bool Init(uint32_t ClockSpeed);
             std::vector<uint8_t> ReadFile(std::string Name);
             SdFile *GetFileStream(std::string Path);
+            std::vector<std::string> ListFiles(std::string Name);
     };
 };
 

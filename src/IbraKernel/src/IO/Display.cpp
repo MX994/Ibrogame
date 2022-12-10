@@ -8,7 +8,7 @@ IbraKernel::Display::Display(uint16_t TFTChipSelect, uint16_t TFTDC, uint16_t TS
 }
 
 bool IbraKernel::Display::Init() {
-    TFT->begin(32);
+    TFT->begin();
     return true;
 }
 

@@ -53,9 +53,8 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
             Registers[0] = IbraKernel::IO::RFID->Read(Registers[0], &WKRAM[Registers[1]], &Registers[2]);
             break;
         }
-
-        // RFID write
         case 10: {
+            // RFID write
             Registers[0] = IbraKernel::IO::RFID->Write(Registers[0], &WKRAM[Registers[1]], &Registers[2]);
             break;
         }

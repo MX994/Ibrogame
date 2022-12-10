@@ -18,12 +18,22 @@ std::vector<uint8_t> IbraKernel::SD::ReadFile(std::string Name) {
         while (Current.curPosition() < Current.fileSize()) {
             Data.push_back(Current.read());
         }
-        for (int i = 0; i < Data.size(); ++i) {
-            Serial.println(Data[i], HEX);
-        }
         Current.close();
     }
     return Data;
+}
+
+std::vector<std::string> IbraKernel::SD::ListFiles(std::string Directory) {
+    std::vector<std::string> Files;
+    FsFile Dir, Current;
+    if (Dir.open(Directory.c_str())) {
+        while (Current.openNext(&Dir, O_RDONLY)) {
+            char NameBuffer[0x20];
+            Current.getName(NameBuffer, 0x20);
+            Files.push_back(NameBuffer);
+        }
+    }
+    return Files;
 }
 
 SdFile *IbraKernel::SD::GetFileStream(std::string Path) {

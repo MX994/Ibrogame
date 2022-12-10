@@ -29,6 +29,10 @@ void KernelBootAnimation() {
   IbraKernel::IO::Display->GetTFT()->setCursor(0, 0);
   // IbraKernel::IO::Display->GetTFT()->fillScreen(HX8357_BLACK);
   IbraKernel::REX Interp;
+  std::vector<std::string> F = IbraKernel::IO::EEPROM->ListFiles("/");
+  for (int i = 0; i < F.size(); ++i) {
+    Serial.println(F[i].c_str());
+  }
   Interp.RunFromFile("boot.rex");
 }
 
