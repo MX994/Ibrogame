@@ -3,5 +3,5 @@
 _entry:
     ldstring 1, Hello, world! @ Load "Hello, world!" string into R1.
     syscall 0 @ Do a syscall to print it to the screen.
-    end @ Terminate execution
+    ret @ Terminate execution
     

@@ -140,8 +140,8 @@
 .hword \p0
 .endm
 
-@ end 
-.macro end 
+@ ret
+.macro ret 
 .hword 0x14
 .endm
 

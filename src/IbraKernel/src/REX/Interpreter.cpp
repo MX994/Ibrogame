@@ -42,6 +42,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
     }
     while (true) {
         uint16_t Operation = *(uint16_t *)(Program + Registers[PC]);
+        Serial.println(Operation);
         Registers[PC] += sizeof(uint16_t);
         switch (Operation) {
             case moverr: {
@@ -231,7 +232,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint8_t Expected = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Expected);
 
-                int16_t JumpOffset = *(Program + Registers[PC]);
+                uint16_t JumpOffset = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(JumpOffset);
                 if (Registers[CND] == Expected) {
                     Registers[PC] = JumpOffset;
@@ -240,15 +241,15 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 break;
             }
             case jump: {
-                //jump
-                int16_t JumpOffset = *(Program + Registers[PC]);
+                // jump <offset>
+                uint16_t JumpOffset = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(JumpOffset);
 
-                Registers[PC] = (uint16_t)(JumpOffset);
+                Registers[PC] = JumpOffset;
                 break;
             }
             case syscall: {
-                // syscall
+                // syscall <num>
                 uint16_t SyscallNum = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(SyscallNum);
 
@@ -270,7 +271,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
-                Registers[DestRegister] = *((uint8_t *)Registers[SrcRegister] + Shift);
+                Registers[DestRegister] = WKRAM[Registers[SrcRegister] + Shift];
                 break;
             }
             case strbr: {
@@ -284,7 +285,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
-                *((uint8_t *)Registers[DestRegister] + Shift) = Registers[SrcRegister];
+                WKRAM[Registers[DestRegister] + Shift] = Registers[SrcRegister];
                 break;
             }
             case strbi: {
@@ -298,7 +299,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
-                *((uint8_t *)Registers[DestRegister] + Shift) = Immediate;
+                WKRAM[Registers[DestRegister] + Shift] = Immediate;
                 break;
             }      
             case ldrh: {
@@ -312,7 +313,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
-                Registers[DestRegister] = *((uint16_t *)((uint8_t *)Registers[SrcRegister] + Shift));
+                Registers[DestRegister] = *(uint16_t *)&WKRAM[Registers[SrcRegister] + Shift];
                 break;
             }
             case strhr: {
@@ -326,7 +327,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
-                *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Registers[SrcRegister];
+                *(uint16_t *)(&WKRAM[Registers[DestRegister] + Shift]) = Registers[SrcRegister];
                 break;
             }
             case strhi: {
@@ -340,7 +341,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Shift = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Shift);
 
-                *((uint16_t *)((uint8_t *)Registers[DestRegister] + Shift)) = Immediate;
+                *(uint16_t *)(&WKRAM[Registers[DestRegister] + Shift]) = Immediate;
                 break;
             }       
             case ldstring: {
@@ -357,6 +358,8 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
             default: {
                 Serial.print("Unrecognized opcode. Opcode was ");
                 Serial.println(Operation);
+                Serial.print("Curr Position:");
+                Serial.println(Registers[PC]);
                 Serial.println("Exiting VM...");
                 return;
             }
@@ -370,12 +373,7 @@ void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Comp
             *Condition = LHS < RHS; 
             break;
         case GT:
-            Serial.println("LHS");
-            Serial.println(LHS);
-            Serial.println("RHS");
-            Serial.println(RHS);
             *Condition = LHS > RHS;
-            Serial.println(*Condition);
             break;
         case LTEQ:
             *Condition = LHS <= RHS;

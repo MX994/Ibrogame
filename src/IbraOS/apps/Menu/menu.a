@@ -5,40 +5,77 @@ _entry:
     moveri 0, 2
     syscall 15
 
-    @ Set text color to white
+    @ Set text color to white.
     moveri 0, 0xFFFF
     syscall 16
 
-    @ Allocate 2 buffers.
+    @ SD file list.
     moveri 0, 256
     syscall 13
     moverr 5, 0
 
-    moveri 0, 256
+    @ ">" character buffer.
+    moveri 0, 2
     syscall 13
-    moverr 6, 0
+    moverr 10, 0 
+    strbi 10, 62, 0 @ >
+    strbi 10, 0, 1 @ >
 
-    @ Print SD files to buffer
+    @ Print SD filenames.
     ldstring 0, /
     moverr 1, 5
     syscall 11
     moverr 7, 0
-
-    @ Now to the screen
-    moverr 0, 5
+    @ Print on the screen.
+screen_update:
+    moverr 0, 5 @ SD File List
+    moveri 8, 0 @ Loop Variable
 loop:
+    cmprr 8, EQ, 11 @ Check if this is the currently selected element
+    cjump 1, print_sel_char
+_skip_print_sel_char:
+    moveri 1, 1 @ Print Newline
     syscall 0 @ Print Current String
+
     moverr 9, 0 @ Copy Current Pointer
     syscall 12 @ String Length of current pointer
+
     addrr 9, 0 @ Add string length to current pointer
     addri 9, 1 @ Skip null terminator
     addri 8, 1 @ Increment Loop Counter
     moverr 0, 9 @ Update Current Pointer
+
     cmprr 7, GT, 8 @ Check if we printed all strings
     cjump 1, loop @ If not then print the current pointer
-_done:
-    end
+get_input_handler:
+    @ We want to use the left joystick to control. 
+    @ Analog up/down: Index app. Click: Select.
+    syscall 4 @ Left Joystick Get Y
+    cmpri 0, LTEQ, 540 @ Check if stick tilted down
+    cjump 1, change_pos_down
+    cmpri 0, GTEQ, 540 @ Check if stick tilted up
+    cjump 1, change_pos_up
+    syscall 5 @ Left Joystick Get Pressed
+    cmpri 0, 1 @ Check if stick pressed
+    cjump 1, sel_and_run
+    jump get_input_handler
+change_pos_down:
+    cmprr 7, GT, 10 
+    cjump 1 get_input_handler
+    addri 7, 1
+    jump screen_update
+change_pos_up:
+    cmpri 10, GTEQ, 0 
+    cjump 0 get_input_handler
+    subri 7, 1
+    jump screen_update
+sel_and_run:
+    ret
 
-    
-    
+print_sel_char:
+    moveri 0, 0
+    moverr 0, 10
+    syscall 0
+    moverr 0, 9
+    jump _skip_print_sel_char
 

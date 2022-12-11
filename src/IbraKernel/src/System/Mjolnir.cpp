@@ -4,7 +4,12 @@
 void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> WKRAM_Map) {
     switch (Syscall) {
         case 0: {
-            IbraKernel::IO::Display->GetTFT()->println((char *)&WKRAM[Registers[0]]);
+            // Switch on Register 1 so we don't have to redefine lmao
+            if (!Registers[1]) {
+                IbraKernel::IO::Display->GetTFT()->print((char *)&WKRAM[Registers[0]]);
+            } else {                    
+                IbraKernel::IO::Display->GetTFT()->println((char *)&WKRAM[Registers[0]]);
+            }
             break;
         }
         case 1: {
