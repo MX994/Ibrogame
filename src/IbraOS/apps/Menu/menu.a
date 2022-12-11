@@ -1,0 +1,44 @@
+.include "lib/rasm.inc"
+
+_entry:
+    @ Set text size to a reasonable size.
+    moveri 0, 2
+    syscall 15
+
+    @ Set text color to white
+    moveri 0, 0xFFFF
+    syscall 16
+
+    @ Allocate 2 buffers.
+    moveri 0, 256
+    syscall 13
+    moverr 5, 0
+
+    moveri 0, 256
+    syscall 13
+    moverr 6, 0
+
+    @ Print SD files to buffer
+    ldstring 0, /
+    moverr 1, 5
+    syscall 11
+    moverr 7, 0
+
+    @ Now to the screen
+    moverr 0, 5
+loop:
+    syscall 0 @ Print Current String
+    moverr 9, 0 @ Copy Current Pointer
+    syscall 12 @ String Length of current pointer
+    addrr 9, 0 @ Add string length to current pointer
+    addri 9, 1 @ Skip null terminator
+    addri 8, 1 @ Increment Loop Counter
+    moverr 0, 9 @ Update Current Pointer
+    cmprr 7, GT, 8 @ Check if we printed all strings
+    cjump 1, loop @ If not then print the current pointer
+_done:
+    end
+
+    
+    
+

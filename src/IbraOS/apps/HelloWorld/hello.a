@@ -1,8 +1,7 @@
 .include "lib/rasm.inc"
 
 _entry:
-    @ Load "Hello, world!" string into R1.
-    ldstring 1, Hello, world!
-    @ Do a syscall to print it to the screen.
-    syscall 0
+    ldstring 1, Hello, world! @ Load "Hello, world!" string into R1.
+    syscall 0 @ Do a syscall to print it to the screen.
+    end @ Terminate execution
     

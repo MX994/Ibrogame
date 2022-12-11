@@ -25,14 +25,18 @@ std::vector<uint8_t> IbraKernel::SD::ReadFile(std::string Name) {
 
 std::vector<std::string> IbraKernel::SD::ListFiles(std::string Directory) {
     std::vector<std::string> Files;
-    FsFile Dir, Current;
+    SdFile Dir, Current;
     if (Dir.open(Directory.c_str())) {
         while (Current.openNext(&Dir, O_RDONLY)) {
-            char NameBuffer[0x20];
-            Current.getName(NameBuffer, 0x20);
-            Files.push_back(NameBuffer);
+            if (Current.isFile()) {
+                char NameBuffer[0x20];
+                Current.getName(NameBuffer, 0x20);
+                Files.push_back(NameBuffer);
+            }
+            Current.close();
         }
     }
+    Serial.println(Files.size());
     return Files;
 }
 

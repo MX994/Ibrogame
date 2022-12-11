@@ -209,7 +209,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint8_t Op2Reg = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Op2Reg);
 
-                CompareSetCondReg(Op1Reg, CompInst, Op2Reg, &Registers[CND]);
+                CompareSetCondReg(Registers[Op1Reg], Registers[Op2Reg], CompInst, &Registers[CND]);
                 break;
             }
             case cmpri: {
@@ -223,7 +223,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t Val = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Val);
 
-                CompareSetCondReg(Op1Reg, CompInst, Val, &Registers[CND]);
+                CompareSetCondReg(Registers[Op1Reg], Val, CompInst, &Registers[CND]);
                 break;
             }
             case cjump: {
@@ -231,12 +231,12 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint8_t Expected = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(Expected);
 
-                int16_t RelJumpOffset = *(Program + Registers[PC]);
-                Registers[PC] += sizeof(RelJumpOffset);
-
+                int16_t JumpOffset = *(Program + Registers[PC]);
+                Registers[PC] += sizeof(JumpOffset);
                 if (Registers[CND] == Expected) {
-                    Registers[PC] = (uint16_t)(Registers[PC] + RelJumpOffset);
+                    Registers[PC] = JumpOffset;
                 }
+
                 break;
             }
             case jump: {
@@ -244,7 +244,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 int16_t JumpOffset = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(JumpOffset);
 
-                Registers[PC] = (uint16_t)(Registers[PC] + JumpOffset);
+                Registers[PC] = (uint16_t)(JumpOffset);
                 break;
             }
             case syscall: {
@@ -252,7 +252,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t SyscallNum = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(SyscallNum);
 
-                IbraKernel::Mjolnir::Call(SyscallNum, Registers, WKRAM);
+                IbraKernel::Mjolnir::Call(SyscallNum, Registers, WKRAM, WKRAM_MAP);
                 break;
             }
             case ret: {
@@ -370,7 +370,12 @@ void IbraKernel::REX::CompareSetCondReg(uint16_t LHS, uint16_t RHS, uint8_t Comp
             *Condition = LHS < RHS; 
             break;
         case GT:
+            Serial.println("LHS");
+            Serial.println(LHS);
+            Serial.println("RHS");
+            Serial.println(RHS);
             *Condition = LHS > RHS;
+            Serial.println(*Condition);
             break;
         case LTEQ:
             *Condition = LHS <= RHS;

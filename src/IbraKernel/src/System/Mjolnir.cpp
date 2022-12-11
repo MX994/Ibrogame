@@ -1,7 +1,7 @@
 #include "System/Mjolnir.h"
 #include "IO/IO.h"
 
-void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM) {
+void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> WKRAM_Map) {
     switch (Syscall) {
         case 0: {
             IbraKernel::IO::Display->GetTFT()->println((char *)&WKRAM[Registers[0]]);
@@ -58,7 +58,55 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
             Registers[0] = IbraKernel::IO::RFID->Write(Registers[0], &WKRAM[Registers[1]], &Registers[2]);
             break;
         }
-        
+        case 11: {
+            // List Files.
+            std::vector<std::string> Files = IbraKernel::IO::EEPROM->ListFiles((char *)&WKRAM[Registers[0]]);
+            uint16_t Skip = 0;
+            for (int Elem = 0; Elem < Files.size(); ++Elem) {
+                sprintf((char *)&WKRAM[Registers[1] + Skip], Files[Elem].c_str());
+                Skip += Files[Elem].size() + 1;
+            }
+            Registers[0] = Files.size();
+            break;
+        }
+        case 12: {
+            // strlen
+            Registers[0] = strlen((char *)&WKRAM[Registers[0]]);
+            break;
+        }
+        case 13: {
+            // memalloc
+            uint16_t WKRAMPtr = 0;
+            while (WKRAM_Map.count(WKRAMPtr)) {
+                if (WKRAMPtr > 8192) {
+                    // Cannot allocate any WKRAM; return.
+                    return;
+                }
+                WKRAMPtr += WKRAM_Map[WKRAMPtr];
+            }
+            // Found WKRAM; add to the entry.
+            WKRAM_Map.insert({WKRAMPtr, Registers[0]});
+
+            for (int i = WKRAMPtr; i < WKRAMPtr + Registers[0]; ++i) {
+                // Init with all 0.
+                WKRAM[i] = 0;
+            }
+            Registers[0] = WKRAMPtr;
+            break;
+        }
+        case 14: {
+            // memfree
+            break;
+        }
+        case 15: {
+            // setFontSize
+            IbraKernel::IO::Display->GetTFT()->setTextSize(Registers[0]);
+            break;
+        }
+        case 16: {
+            IbraKernel::IO::Display->GetTFT()->setTextColor(Registers[0]);
+            break;
+        }
         // // Bluetooth Init
         // case 11: {
         //     IbraKernel::IO::Bluetooth->Init();
@@ -94,7 +142,6 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
         //     IbraKernel::IO::Bluetooth->Stop();
         //     break;
         // }
-
         default:
             break;
     }
