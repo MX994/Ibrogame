@@ -1,0 +1,12 @@
+# Makefile for all executables.
+
+Apollo:
+  Source: Apollo/apollo.a
+  OutputName: boot
+
+Hello World:
+  AppImage: HelloWorld/hello.png
+  Source: HelloWorld/hello.a
+  OutputName: hello
+  IsApp: True
+

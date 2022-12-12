@@ -7,7 +7,7 @@ setup:
     moverr 5, 0
 
     @ Write SD filenames to buffer.
-    ldstring 0, /
+    ldstring 0, /apps
     moverr 1, 5
     syscall 11
     moverr 7, 0 @ Number of files
@@ -18,7 +18,6 @@ setup:
 inp:
     syscall 17
     jump inp
-
     ret
 
 draw_screen:
