@@ -15,7 +15,7 @@ namespace IbraKernel {
     class Display {
         private:
             Adafruit_HX8357 *TFT;
-            TouchScreen *TS;
+            int16_t TS_XMin, TS_XMax, TS_YMin, TS_YMax;
         public:
             Display(uint16_t TFTChipSelect, uint16_t TFTDC, uint16_t TS_XMin, uint16_t TS_XMax, uint16_t TS_YMin, uint16_t TS_YMax);
             bool Init();

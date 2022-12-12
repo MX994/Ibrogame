@@ -2,9 +2,9 @@
 #define __HARDWAREMAP_H
 
 // TFT Touchscreen
-#define TFT_TS_XMIN 7
-#define TFT_TS_XMAX A6
-#define TFT_TS_YMIN 8
+#define TFT_TS_XMIN A6
+#define TFT_TS_XMAX 8
+#define TFT_TS_YMIN 7
 #define TFT_TS_YMAX A7
 
 // TFT

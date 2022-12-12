@@ -2,6 +2,8 @@
 #include "IO/IO.h"
 
 void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> &WKRAM_Map) {
+    Serial.print("Syscall: ");
+    Serial.println(Syscall);
     switch (Syscall) {
         case 0: {
             // Switch on Register 1 so we don't have to redefine lmao
@@ -118,14 +120,22 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
         }
         case 17: {
             Registers[0] = IbraKernel::IO::Display->GetTouchX();
+            Serial.println(Registers[0]);
             break;
         }
         case 18: {
             Registers[0] = IbraKernel::IO::Display->GetTouchY();
+            Serial.println(Registers[0]);
             break;
         }
         case 19: {
             Registers[0] = IbraKernel::IO::Display->GetTouchZ();
+            Serial.println(Registers[0]);
+            break;
+        }
+        case 20: {
+            // setCursor
+            IbraKernel::IO::Display->GetTFT()->setCursor(Registers[0], Registers[1]);
             break;
         }
         // // Bluetooth Init

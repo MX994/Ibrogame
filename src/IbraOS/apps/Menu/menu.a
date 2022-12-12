@@ -1,87 +1,81 @@
 .include "lib/rasm.inc"
 
-_entry:
-    @ Set text size to a reasonable size.
-    moveri 0, 2
-    syscall 15
-
-    @ Set text color to white.
-    moveri 0, 0xFFFF
-    syscall 16
-
-    @ SD file list.
+setup:
+    @ Allocate space for SD filenames.
     moveri 0, 256
     syscall 13
     moverr 5, 0
 
-    @ Print SD filenames.
+    @ Write SD filenames to buffer.
     ldstring 0, /
     moverr 1, 5
     syscall 11
     moverr 7, 0 @ Number of files
 
-    @ ">" character buffer.
-    moveri 0, 2
-    syscall 13
-    moverr 10, 0 
-    strbi 10, 62, 0 @ >
-    strbi 10, 20, 1 @ >
+    call draw_screen @ Draw UI
 
-    @ Testing this call shit lmao
-_entry_loop:
-    call screen_update @ Print all files & selection to screen
-_inp_loop:
-    call get_joystick_input
-    cjump 1, _entry_loop
-    jump _inp_loop
+    @ Poll for input.
+inp:
+    syscall 17
+    jump inp
+
     ret
 
-get_joystick_input:
-    syscall 4 @ Get Joystick Y
-    cmpri 0, GT, 700 @ Is Joystick Pressed Up?
-    cjump 1, move_cursor_up
+draw_screen:
+    @ Update text size.
+    moveri 0, 3
+    syscall 15
 
-    cmpri 0, LT, 300 @ Is Joystick Pressed Down?
-    cjump 1, move_cursor_down
+    @ Set text color to Grayish.
+    moveri 0, 0x3186
+    syscall 16
 
-    syscall 5 @ Get Joystick SW Pressed
-    cmpri 0, 1 @ Is Joystick SW Pressed
-    jump _exit_joystick_inp
+    @ Fill Background
+    moveri 0, 0
+    moveri 1, 0
+    moveri 2, 480
+    moveri 3, 320
+    moveri 4, 0xF71B
+    syscall 2
 
-move_cursor_up:
-    addri 11, 1
-    jump _exit_joystick_inp
-move_cursor_down:
-    subri 11, 1
-    jump _exit_joystick_inp
-_exit_joystick_inp:    
-    ret
+    @ Set text cursor to 16, 0
+    moveri 0, 16
+    moveri 1, 16
+    syscall 20
 
-screen_update:
-    moverr 0, 5 @ SD File List
-    moveri 8, 0 @ Loop Variable
-loop:
-    cmprr 8, EQ, 11 @ Check if currently selected
-    ccall 1, print_sel_char
-    moveri 1, 1 @ Print Newline
-    syscall 0 @ Print Current String
-
-    moverr 9, 0 @ Copy Current Pointer
-    syscall 12 @ String Length of current pointer
-
-    addrr 9, 0 @ Add string length to current pointer
-    addri 9, 1 @ Skip null terminator
-    addri 8, 1 @ Increment Loop Counter
-    moverr 0, 9 @ Update Current Pointer
-
-    cmprr 7, GT, 8 @ Check if we printed all strings
-    cjump 1, loop @ If not then print the current pointer
-    ret
-
-print_sel_char:
-    moveri 1, 0 @ Print no newline
-    moverr 0, 10 @ Char
+    @ Print "Apps" Text
+    ldstring 0, Applications
+    moveri 1, 1 @ Display println
     syscall 0
-    moverr 0, 9
+
+    @ Draw applet boxes
+    moveri 8, 0 @ Loop register.
+    @ Initial Positions
+    moveri 0, 24 @ x
+    moveri 1, 48 @ y
+    @ Width and Height of Box
+    moveri 2, 96 @ w
+    moveri 3, 96 @ h
+    @ Color
+    moveri 4, 0xB43D @ Color
+draw_screen_loop:
+    @ Draw boxes
+    cmprr 8, LT, 7
+    cjump 0, draw_screen_loop_exit
+
+    @ Check if we're about to draw out of bounds.
+    @ If so, force it not to.
+    cmpri 0, LT, 320
+    cjump 1, _ds_draw
+    addri 1, 112 @ Increment Y
+    moveri 0, 24 @ Reset X
+_ds_draw:
+    @ R0 -> R4: x, y, w, h, color.
+    @ Should be set by here.
+    syscall 2 @ fillRect
+    addri 8, 1 @ Increment loop register.
+    addri 0, 112
+    jump draw_screen_loop
+draw_screen_loop_exit:
     ret
-    
+
