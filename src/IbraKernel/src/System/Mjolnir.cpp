@@ -1,7 +1,7 @@
 #include "System/Mjolnir.h"
 #include "IO/IO.h"
 
-void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> WKRAM_Map) {
+void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> &WKRAM_Map) {
     switch (Syscall) {
         case 0: {
             // Switch on Register 1 so we don't have to redefine lmao
@@ -30,6 +30,7 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
         case 4: {
             // left joystick get y
             Registers[0] = IbraKernel::IO::LeftJoystick->GetY();
+            Serial.println(Registers[0]);
             break;
         }
 
@@ -81,6 +82,8 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
         }
         case 13: {
             // memalloc
+            Serial.print("Alloc of size:");
+            Serial.println(Registers[0]);
             uint16_t WKRAMPtr = 0;
             while (WKRAM_Map.count(WKRAMPtr)) {
                 if (WKRAMPtr > 8192) {
@@ -97,6 +100,7 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
                 WKRAM[i] = 0;
             }
             Registers[0] = WKRAMPtr;
+            Serial.println(Registers[0]);
             break;
         }
         case 14: {
@@ -110,6 +114,18 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
         }
         case 16: {
             IbraKernel::IO::Display->GetTFT()->setTextColor(Registers[0]);
+            break;
+        }
+        case 17: {
+            Registers[0] = IbraKernel::IO::Display->GetTouchX();
+            break;
+        }
+        case 18: {
+            Registers[0] = IbraKernel::IO::Display->GetTouchY();
+            break;
+        }
+        case 19: {
+            Registers[0] = IbraKernel::IO::Display->GetTouchZ();
             break;
         }
         // // Bluetooth Init

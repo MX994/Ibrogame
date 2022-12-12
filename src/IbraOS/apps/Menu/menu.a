@@ -14,26 +14,55 @@ _entry:
     syscall 13
     moverr 5, 0
 
+    @ Print SD filenames.
+    ldstring 0, /
+    moverr 1, 5
+    syscall 11
+    moverr 7, 0 @ Number of files
+
     @ ">" character buffer.
     moveri 0, 2
     syscall 13
     moverr 10, 0 
     strbi 10, 62, 0 @ >
-    strbi 10, 0, 1 @ >
+    strbi 10, 20, 1 @ >
 
-    @ Print SD filenames.
-    ldstring 0, /
-    moverr 1, 5
-    syscall 11
-    moverr 7, 0
-    @ Print on the screen.
+    @ Testing this call shit lmao
+_entry_loop:
+    call screen_update @ Print all files & selection to screen
+_inp_loop:
+    call get_joystick_input
+    cjump 1, _entry_loop
+    jump _inp_loop
+    ret
+
+get_joystick_input:
+    syscall 4 @ Get Joystick Y
+    cmpri 0, GT, 700 @ Is Joystick Pressed Up?
+    cjump 1, move_cursor_up
+
+    cmpri 0, LT, 300 @ Is Joystick Pressed Down?
+    cjump 1, move_cursor_down
+
+    syscall 5 @ Get Joystick SW Pressed
+    cmpri 0, 1 @ Is Joystick SW Pressed
+    jump _exit_joystick_inp
+
+move_cursor_up:
+    addri 11, 1
+    jump _exit_joystick_inp
+move_cursor_down:
+    subri 11, 1
+    jump _exit_joystick_inp
+_exit_joystick_inp:    
+    ret
+
 screen_update:
     moverr 0, 5 @ SD File List
     moveri 8, 0 @ Loop Variable
 loop:
-    cmprr 8, EQ, 11 @ Check if this is the currently selected element
-    cjump 1, print_sel_char
-_skip_print_sel_char:
+    cmprr 8, EQ, 11 @ Check if currently selected
+    ccall 1, print_sel_char
     moveri 1, 1 @ Print Newline
     syscall 0 @ Print Current String
 
@@ -47,35 +76,12 @@ _skip_print_sel_char:
 
     cmprr 7, GT, 8 @ Check if we printed all strings
     cjump 1, loop @ If not then print the current pointer
-get_input_handler:
-    @ We want to use the left joystick to control. 
-    @ Analog up/down: Index app. Click: Select.
-    syscall 4 @ Left Joystick Get Y
-    cmpri 0, LTEQ, 540 @ Check if stick tilted down
-    cjump 1, change_pos_down
-    cmpri 0, GTEQ, 540 @ Check if stick tilted up
-    cjump 1, change_pos_up
-    syscall 5 @ Left Joystick Get Pressed
-    cmpri 0, 1 @ Check if stick pressed
-    cjump 1, sel_and_run
-    jump get_input_handler
-change_pos_down:
-    cmprr 7, GT, 10 
-    cjump 1 get_input_handler
-    addri 7, 1
-    jump screen_update
-change_pos_up:
-    cmpri 10, GTEQ, 0 
-    cjump 0 get_input_handler
-    subri 7, 1
-    jump screen_update
-sel_and_run:
     ret
 
 print_sel_char:
-    moveri 0, 0
-    moverr 0, 10
+    moveri 1, 0 @ Print no newline
+    moverr 0, 10 @ Char
     syscall 0
     moverr 0, 9
-    jump _skip_print_sel_char
-
+    ret
+    

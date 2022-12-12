@@ -200,3 +200,22 @@
 .asciz "\p1\()"
 .endm
 
+@ call:
+.macro call p0
+@ psuedo instruction.
+moverr 14, 15 @ Save Curr Link Register
+addri 14, 10 @ Skip ahead
+moveri 15, \p0 @ Update Program Counter  
+.endm
+
+@ ccall:
+.macro ccall p0, p1
+@ psuedo instruction.
+cjump \p0, do_call
+jump no_call
+do_call:
+    moverr 14, 15 @ Save Curr Link Register
+    addri 14, 10 @ Skip ahead
+    moveri 15, \p1 @ Update Program Counter  
+no_call:
+.endm

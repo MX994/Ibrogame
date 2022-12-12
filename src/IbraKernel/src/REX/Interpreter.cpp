@@ -42,7 +42,6 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
     }
     while (true) {
         uint16_t Operation = *(uint16_t *)(Program + Registers[PC]);
-        Serial.println(Operation);
         Registers[PC] += sizeof(uint16_t);
         switch (Operation) {
             case moverr: {
@@ -258,7 +257,13 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
             }
             case ret: {
                 // ret
-                return;
+                if (Registers[LR] > 0) {
+                    Registers[PC] = Registers[LR];
+                    Registers[LR] = 0;
+                } else {
+                    return;
+                }
+                break;
             }
             case ldrb: {
                 // ldrb <dest> <src> <shift>

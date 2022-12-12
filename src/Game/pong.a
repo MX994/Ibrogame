@@ -1,0 +1,33 @@
+@ General game structure:
+@ game state consists of four sets of locals:
+@ (r0, r1) = (paddle x, paddle y)
+@       r2 = paddle velocity
+@ (r3, r4) = (ball x, ball y)
+@ (r5, r6) = (ball x vel, ball y vel)
+
+@ initialize game state
+_init:
+moveri 0, 120
+moveri 1, 240
+
+moveri 2, 10
+
+moveri r3, 120
+moveri r4, 170
+
+moveri r5, 20
+moveri r6, -20
+
+@ play the game
+_gameloop: 
+    while(ball is in bounds) {
+        check if ball is out of bounds
+        see what directions the joystick was pressed in
+        move ball based on directions
+
+        check if ball is out of bounds
+        check if ball collides with paddle 
+    }
+
+_exit:
+    @ return to boot menu
