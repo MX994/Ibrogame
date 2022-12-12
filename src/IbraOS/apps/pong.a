@@ -1,0 +1,47 @@
+@ General game structure:
+@ game state consists of four sets of locals:
+@ (paddle x, paddle y)
+@  paddle velocity
+@ (ball x, ball y)
+@ (ball x vel, ball y vel)
+
+@ initialize game state
+_gamestart:
+    @ draw paddle
+    moveri 0, 120   @ x
+    moveri 1, 240   @ y
+    moveri 2, 100   @ w
+    moveri 3, 50    @ h
+    moveri 4, 99    @ I forget what this is for
+    syscall 2       @ draw
+
+    @ draw ball
+    moveri 0, 200   @ x
+    moveri 1, 320   @ y
+    moveri 2, 25    @ w
+    moveri 3, 25    @ h
+    moveri 4, 99    @ surprise tool for later :)
+    syscall 2       @ draw
+
+_gameloop:
+    while(ball is in bounds) {
+        check if ball is out of bounds
+        see what directions the joystick was pressed in
+        move ball based on directions
+
+        check if ball is out of bounds
+        check if ball collides with paddle 
+    }
+
+    @ check to see if game is over
+    @ being over means ball has left playing area
+    @ i.e. off the top
+    cmpri <ball y register>, GT, 240
+    cjump GT, <offset to _gameend>
+
+    xorrr <paddle x vel reg>, <paddle x vel reg>
+    xorrr <paddle y vel reg>, <paddle y vel reg>
+
+
+_gameend:
+  @ either reset game or back to boot menu
