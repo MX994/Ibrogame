@@ -20,7 +20,7 @@ _gamestart:
     moveri 1, 320   @ y
     moveri 2, 25    @ w
     moveri 3, 25    @ h
-    moveri 4, 99    @ surprise tool for later :)
+    moveri 4, 99    @ surprise tool for later :) (idk what this is)
     syscall 2       @ draw
 
 _gameloop:
@@ -34,14 +34,24 @@ _gameloop:
     }
 
     @ check to see if game is over
-    @ being over means ball has left playing area
-    @ i.e. off the top
+    @ game over means ball has left playing area, i.e. off the top
     cmpri <ball y register>, GT, 240
     cjump GT, <offset to _gameend>
 
-    xorrr <paddle x vel reg>, <paddle x vel reg>
-    xorrr <paddle y vel reg>, <paddle y vel reg>
+    xorrr <paddle x vel reg>, <paddle x vel reg>    @ set stuff to zero
+    xorrr <paddle y vel reg>, <paddle y vel reg>    @ set stuff to zero 
+    @ get input from joystick x and y
+    @ if input is yes, set corresponding velocity to 10
+    @ add x, y vel to x, y pos
+
+    @ move ball in direction it is currently bouncing
+    @ this means add x, y vel to x, y pos
+
+    @check for collision (I'll get back to you on the math for this)
+
+
 
 
 _gameend:
   @ either reset game or back to boot menu
+  jump _gameloop
