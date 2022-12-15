@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <vector>
 #include "Adafruit_GFX.h"
+#include "System/Mjolnir.h"
 
 void KernelBootAnimation(void);
 

@@ -48,5 +48,5 @@ int IbraKernel::Display::GetTouchY() {
 }
 
 int IbraKernel::Display::GetTouchZ() {
-    return TS->getPoint().z;
+    return -1;
 }

@@ -2,22 +2,24 @@
 
 setup:
     @ Allocate space for SD filenames.
-    moveri 0, 256
+    moveri 0, 0x1000
     syscall 13
     moverr 5, 0
-
-    @ Write SD filenames to buffer.
-    ldstring 0, /apps
-    moverr 1, 5
-    syscall 11
-    moverr 7, 0 @ Number of files
 
     call draw_screen @ Draw UI
 
     @ Poll for input.
-inp:
-    syscall 17
-    jump inp
+    ldstring 0, /apps
+    syscall 21
+
+    moverr 0, 0
+    moverr 1, 5
+    syscall 22
+
+    moverr 2, 1
+    moveri 1, 16
+    moveri 0, 16
+    syscall 24
     ret
 
 draw_screen:
@@ -64,7 +66,7 @@ draw_screen_loop:
 
     @ Check if we're about to draw out of bounds.
     @ If so, force it not to.
-    cmpri 0, LT, 320
+    cmpri 0, LT, 480
     cjump 1, _ds_draw
     addri 1, 112 @ Increment Y
     moveri 0, 24 @ Reset X
