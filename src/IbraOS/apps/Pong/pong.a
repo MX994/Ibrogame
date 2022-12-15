@@ -1,33 +1,154 @@
 @ General game structure:
 @ game state consists of four sets of locals:
-@ (r0, r1) = (paddle x, paddle y)
-@       r2 = paddle velocity
-@ (r3, r4) = (ball x, ball y)
-@ (r5, r6) = (ball x vel, ball y vel)
+@ (r6, r7) = (paddle x, paddle y)
+@       r8 = paddle velocity
+@ (r9, r10) = (ball x, ball y)
+@ (r11, r13) = (ball x vel, ball y vel)
 
-@ initialize game state
+.include "lib/rasm.inc"
+
 _init:
-moveri 0, 120
-moveri 1, 240
+    @ set paddle initial pos and belocity
+    moveri 6, 120
+    moveri 7, 240
+    moveri 8, 10
 
-moveri 2, 10
+    @ set ball initial pos and velocity
+    moveri 9, 120
+    moveri 10, 170
+    moveri 11, 20
+    moveri 13, -20
 
-moveri r3, 120
-moveri r4, 170
+_draw:
+    @ draw paddle
+    moverr 0, 6     @x
+    moverr 1, 7     @y
+    moveri 2, 50    @w
+    moveri 3, 100   @h
+    moveri 4, 0xFFFF @ color
+    syscall 2       @fillRect
 
-moveri r5, 20
-moveri r6, -20
+    @ draw ball
+    moverr 0, 9     @x
+    moverr 1, 10    @y
+    moveri 2, 50    @w
+    moveri 3, 50    @h
+    moveri 4, 0xFFFF @ color
+    syscall 2       @fillRect
 
-@ play the game
+
 _gameloop: 
-    while(ball is in bounds) {
-        check if ball is out of bounds
-        see what directions the joystick was pressed in
-        move ball based on directions
+@ check if ball is out of bounds and end game 
+_bound_check:
+    cmpri 10, GT, 320   @ if ball y is past the top of the screen
+    cjump 1, _exit
 
-        check if ball is out of bounds
-        check if ball collides with paddle 
-    }
+@ confine paddle on the screen
+_confine_paddle_x_left:
+    cmpri 6, LT, 0
+    cjump 0, _confine_paddle_x_right
+    moveri 6, 0
+
+_confine_paddle_x_right:
+    cmpri 6, GT, 380
+    cjump 0, _confine_paddle_y_bottom
+    moveri 6, 380
+
+_confine_paddle_y_bottom:
+    cmpri 7, LT, 0
+    cjump 0, _confine_ball_x_left
+    moveri 7, 0
+
+@ confine ball on the screen
+_confine_ball_x_left:
+    cmpri 9, LT, 0
+    cjump 0, _confine_ball_x_right
+    moveri 9, 0
+
+_confine_ball_x_right:
+    cmpri 9, GT, 430
+    cjump 0, _confine_ball_y_bottom
+    moveri 9, 430
+
+_confine_ball_y_bottom:
+    cmpri 10, LT, 0
+    cjump 0, _get_input 
+    moveri 10, 0
+
+@see what directions the joystick was pressed in
+_get_input:
+    syscall 3
+     
+_move_left:
+    cmpri 9, LT, 430
+    cjump 0, _move_right
+    subri 6, 10
+
+_move_right:
+    cmpri 9, GT, 532
+    cjump 0, _ball_paddle_collisions
+    addri 6, 10
+
+@ move ball based on directions
+_ball_paddle_collisions: 
+
+@ ball hits paddle from top
+_horizontal_collisions:
+    cmprr 9, GT, 6  @ left side of ball and left side of paddle
+    cjump 0, _vertical_collisions
+
+_top_collision:
+    moverr 1, 9
+    addri 1, 50     @ right hand border of ball
+    moverr 2, 6
+    addri 2, 100    @ right hand border of paddle
+    cmprr 1, LT, 2
+    cjump 0, _vertical_collisions
+
+    moverr 1, 7
+    addri 1, 50     @ top border of paddle
+    cmprr 10, EQ, 1
+    cjump 0, _bottom_collision
+    subri 13, 0     @ if collision, invert y velocity
+    
+_bottom_collision:
+    moverr 1, 10
+    addri 1, 50
+    cmprr 1, EQ, 7
+    cjump 0, _vertical_collisions
+    subri 13, 0    @ if collision, invert y velocity
+
+
+_vertical_collisions:
+    moverr 1, 9
+    addri 1, 50
+    cmprr 1, GE, 6
+    cjump 0, move_ball
+
+_left_collision:
+    moverr 1, 7
+    addri 1, 50
+    cmprr 1, GE, 7
+    cjump 0, move_ball
+
+    moverr 2, 7
+    addri 7, 50
+    cmprr 1, LE, 7
+    cjump 0, _right_collision
+    subri 11, 0
+
+_right_collision:
+    moverr 1, 10
+    addri 1, 50
+    cmprr 1, EQ, 7
+    cjump 0, _move_ball
+    subri 11, 0    @ if collision, invert x velocity
+
+@ update ball pos
+_move_ball:
+    addrr 9, 11
+    addrr 10, 13
+    jump _gameloop
 
 _exit:
-    @ return to boot menu
+    ret
