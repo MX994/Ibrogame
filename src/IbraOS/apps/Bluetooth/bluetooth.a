@@ -1,0 +1,94 @@
+.include "lib/rasm.inc"
+
+.equ DEADZONE, 256
+
+_entry:
+    @ Set text color white 
+    @ Set text color to Grayish.
+    moveri 0, 0xFFFF
+    syscall 16
+
+    syscall 25 @ Init
+    moveri 1, 0
+    ldstring 1, Bluetooth_Test! 
+    syscall 0 
+    ldstring 1, Waiting... 
+    syscall 0
+    syscall 28 @ Advertise
+    syscall 26 @ Connect
+    moveri 1, 0 
+    ldstring 1, Connected... 
+    syscall 0
+
+@ Handle input
+loop:
+    call get_joystick_action
+    cmpri 0, EQ, 0xDEAD
+    cjump 1, loop
+    syscall 27
+    jump loop
+
+get_joystick_action:
+@ Check x stick first
+l_x_lcheck:
+    syscall 3
+    cmpri 0, LT, 256
+    cjump 0, l_x_rcheck
+    moveri 0, 0
+    ret
+l_x_rcheck:
+    cmpri 0, GT, 768
+    cjump 0, l_y_ucheck
+    moveri 0, 1
+    ret
+l_y_ucheck:
+    syscall 4
+    cmpri 0, GT, 768
+    cjump 0, l_y_dcheck
+    moveri 0, 2
+    ret
+l_y_dcheck:
+    cmpri 0, LT, 256
+    cjump 0, l_sw_check
+    moveri 0, 3
+    ret
+l_sw_check:
+    syscall 5
+    cmpri 0, EQ, 1
+    cjump r_x_lcheck
+    moveri 0, 4
+    ret
+r_x_lcheck:
+    syscall 6
+    cmpri 0, LT, 256
+    cjump 0, r_x_rcheck
+    moveri 0, 5
+    ret
+r_x_rcheck:
+    cmpri 0, GT, 768
+    cjump 0, r_y_ucheck
+    moveri 0, 6
+    ret
+r_y_ucheck:
+    syscall 7
+    cmpri 0, GT, 768
+    cjump 0, r_y_dcheck
+    moveri 0, 7
+    ret
+r_y_dcheck:
+    cmpri 0, LT, 256
+    cjump 0, r_sw_check
+    moveri 0, 8
+    ret
+r_sw_check:
+    syscall 8
+    cmpri 0, EQ, 1
+    cjump 0, wrapup
+    moveri 0, 9
+    ret
+wrapup:
+    moveri 0, 0xDEAD
+    ret
+
+
+map_joystick_up:
