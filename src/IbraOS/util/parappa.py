@@ -58,8 +58,10 @@ with open(Arguments.config, 'r') as YAML:
             for y in range(Icon.height):
                 for x in range(Icon.width):
                     Pixel = Icon.getpixel((x, y))
-                    Red, Green, Blue = (Pixel[0] >> 3) & 0x1F, (Pixel[1] >> 2) & 0x3F, (Pixel[2] >> 3) & 0x1F
-                    Buffer += pack('<H', Red << 0xB | Green << 0x5 | Blue)
+                    Red, Green, Blue = Pixel[0] >> 3, Pixel[1] >> 2, Pixel[2] >> 3 & 0x1F
+                    print(Icon.getpixel((x, y)))
+                    Buffer += pack('<H', (Red << 0xB) | (Green << 0x5) | Blue)
+                    
 
             # Store programs
             Buffer += REXBuf 

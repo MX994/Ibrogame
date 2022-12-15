@@ -1,7 +1,8 @@
 #include "System/Mjolnir.h"
 #include "IO/IO.h"
+#include "RAP/RAP.h"
 
-void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> &WKRAM_Map) {
+void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> &WKRAM_Map, std::vector<std::vector<uint8_t>> &Applets) {
     Serial.print("Syscall: ");
     Serial.println(Syscall);
     switch (Syscall) {
@@ -136,6 +137,45 @@ void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WK
         case 20: {
             // setCursor
             IbraKernel::IO::Display->GetTFT()->setCursor(Registers[0], Registers[1]);
+            break;
+        }
+        case 21: {
+            // Load RAP data
+            std::vector<std::string> Files = IbraKernel::IO::EEPROM->ListFiles((char *)&WKRAM[Registers[0]]);
+            uint16_t Skip = 0;
+            for (int Elem = 0; Elem < Files.size(); ++Elem) {
+                Serial.println(IbraKernel::IO::EEPROM->ReadFile("/apps/" + Files[Elem]).size());
+                Applets.push_back(IbraKernel::IO::EEPROM->ReadFile("/apps/" + Files[Elem]));
+            }
+            Serial.println(Applets.size());
+            break;
+        }
+        case 22: {
+            // Get Icon for current RAP
+            Serial.println(Applets[Registers[0]].size());
+            uint16_t Addr = Applets[Registers[0]][0x14] | (Applets[Registers[0]][0x15] << 0x8), 
+            Size = Applets[Registers[0]][0x16] | (Applets[Registers[0]][0x17] << 0x8);
+            memcpy(&WKRAM[Registers[1]], &Applets[Registers[0]], Size);
+            break;
+        }
+        case 23: {
+            // Get REX for current RAP
+            IbraKernel::RAP RAP;
+            std::vector<uint8_t> REX = RAP.GetREX(Applets[Registers[0]]);
+            memcpy(&WKRAM[Registers[1]], (uint8_t *)&REX[0], REX.size());
+            Serial.println(Applets.size());
+            break;
+        }
+        case 24: {
+            // 
+            int count = 0;
+            for (int i = 0; i < 32; ++i) {
+                for (int j = 0; j < 32; ++j) {
+                    // Serial.println(WKRAM[Registers[2] + count] | (WKRAM[Registers[2] + count + 1] << 0x8));
+                    IbraKernel::IO::Display->GetTFT()->drawPixel(Registers[0] + j, Registers[1] + i, WKRAM[Registers[2] + count] | (WKRAM[Registers[2] + count + 1] << 0x8));
+                    count += 2;
+                }
+            }
             break;
         }
         // // Bluetooth Init

@@ -36,7 +36,6 @@ std::vector<std::string> IbraKernel::SD::ListFiles(std::string Directory) {
             Current.close();
         }
     }
-    Serial.println(Files.size());
     return Files;
 }
 

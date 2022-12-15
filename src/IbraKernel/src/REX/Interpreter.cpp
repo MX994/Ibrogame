@@ -2,6 +2,7 @@
 #include "REX/Interpreter.h"
 #include "System/Mjolnir.h"
 
+std::vector<std::vector<uint8_t>> Applets;
 void IbraKernel::REX::RunFromFile(std::string Path) {
     std::vector<uint8_t> REXRaw = IbraKernel::IO::EEPROM->ReadFile(Path);
     Serial.println("REX loaded successfully. Interpreting...");
@@ -252,7 +253,7 @@ void IbraKernel::REX::Execute(uint8_t *Program) {
                 uint16_t SyscallNum = *(Program + Registers[PC]);
                 Registers[PC] += sizeof(SyscallNum);
 
-                IbraKernel::Mjolnir::Call(SyscallNum, Registers, WKRAM, WKRAM_MAP);
+                IbraKernel::Mjolnir::Call(SyscallNum, Registers, WKRAM, WKRAM_MAP, Applets);
                 break;
             }
             case ret: {
