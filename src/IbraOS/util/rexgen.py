@@ -3,8 +3,8 @@ from pathlib import Path
 from subprocess import check_output, CalledProcessError
 from sys import stderr, exit
 
-AS = 'arm-none-eabi-as'
-OBJCOPY = 'arm-none-eabi-objcopy'
+AS = 'arm-none-eabi-as.exe'
+OBJCOPY = 'arm-none-eabi-objcopy.exe'
 
 def Subproc(cmd):
 	try:

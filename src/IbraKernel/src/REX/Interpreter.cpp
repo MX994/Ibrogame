@@ -36,6 +36,8 @@ void IbraKernel::REX::WKRAMFree(uint16_t Ptr) {
     WKRAM_MAP.erase(Ptr);
 }
 
+// INTERPRETER
+
 void IbraKernel::REX::Execute(uint8_t *Program) {
     uint16_t Registers[0x10];
     for (int i = 0; i < 0x10; ++i) {

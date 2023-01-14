@@ -2,6 +2,8 @@
 #include "IO/IO.h"
 #include "RAP/RAP.h"
 
+// SYSTEM CALL TABLE
+
 void IbraKernel::Mjolnir::Call(uint8_t Syscall, uint16_t *Registers, uint8_t *WKRAM, std::map<int, int> &WKRAM_Map, std::vector<std::vector<uint8_t>> &Applets) {
     Serial.print("Syscall: ");
     Serial.println(Syscall);
