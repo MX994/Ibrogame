@@ -12,7 +12,7 @@ setup:
     ldstring 0, /apps
     syscall 21
 
-    moverr 0, 0
+    moveri 0, 0
     moverr 1, 5
     syscall 22
 

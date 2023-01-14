@@ -1,7 +1,7 @@
 # Makefile for all executables.
 
 Apollo:
-  Source: Apollo/apollo.a
+  Source: Bluetooth/bluetooth.a
   OutputName: boot
 
 Hello World:
